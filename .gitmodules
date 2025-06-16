@@ -1,0 +1,4 @@
+[submodule "webui/submodules/FramePack"]
+	path = webui/submodules/FramePack
+	url = https://github.com/lllyasviel/FramePack.git
+	branch = main
