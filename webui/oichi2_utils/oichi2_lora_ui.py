@@ -36,6 +36,7 @@ def create_lora_main_ui_blocks(max_lora_count):
     # ファイルアップロードUI
     with gr.Group(visible=False) as lora_upload_group:
         lora_files_list = []
+        lora_upload_strength_list = []  # アップロード用強度入力欄
         # ファイルアップロードも2列レイアウト（3行×2列）
         rows_needed_upload = (max_lora_count + 1) // 2
         
@@ -44,13 +45,28 @@ def create_lora_main_ui_blocks(max_lora_count):
                 for col in range(2):
                     i = row * 2 + col
                     if i < max_lora_count:
+                        # 各LoRAセット（ファイル + 強度）を1つのColumnにまとめる
                         with gr.Column(scale=1):
-                            lora_file = gr.File(
-                                label=translate("LoRAファイル{0}").format(i+1),
-                                file_types=[".safetensors", ".pt", ".bin"],
-                                height=120
-                            )
-                            lora_files_list.append(lora_file)
+                            with gr.Row():
+                                # ファイルアップロードと強度を横並び
+                                with gr.Column(scale=3):
+                                    lora_file = gr.File(
+                                        label=translate("LoRAファイル{0}").format(i+1),
+                                        file_types=[".safetensors", ".pt", ".bin"],
+                                        height=120
+                                    )
+                                    lora_files_list.append(lora_file)
+                                
+                                with gr.Column(scale=1, min_width=80):
+                                    lora_upload_strength = gr.Number(
+                                        label=translate("強度"),
+                                        value=0.8,
+                                        minimum=0.0,
+                                        maximum=2.0,
+                                        step=0.1,
+                                        precision=2
+                                    )
+                                    lora_upload_strength_list.append(lora_upload_strength)
 
     # ドロップダウンUI
     with gr.Group(visible=False) as lora_dropdown_group:
@@ -112,6 +128,7 @@ def create_lora_main_ui_blocks(max_lora_count):
     
     ui_components = {
         "lora_files_list": lora_files_list,
+        "lora_upload_strength_list": lora_upload_strength_list,
         "lora_dropdowns_list": lora_dropdowns_list,
         "lora_strength_list": lora_strength_list,
         "lora_scan_button": lora_scan_button,
@@ -175,7 +192,7 @@ def create_lora_preset_ui_block(max_lora_count):
                 )
             with gr.Column(scale=1, min_width=120):
                 lora_count_save_btn = gr.Button(
-                    translate("表示数設定\\n保存"),
+                    translate("表示数設定保存"),
                     variant="secondary"
                 )
 

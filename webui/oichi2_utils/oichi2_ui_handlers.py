@@ -351,34 +351,17 @@ def update_resolution_info(resolution_value, input_image_path=None):
             orig_w, orig_h = prediction['original_size']
             cropping_info = prediction.get('cropping_info')
             
-            # 基本情報
+            # 基本情報（幅×高さの順序で統一）
             info_text = f"""🖼️ **入力画像の予想出力サイズ**
 
 **元サイズ**: **{orig_w}×{orig_h}** ({prediction['aspect_description']})  
-**予想サイズ**: **{pred_h}×{pred_w}** ({pred_h * pred_w:,}ピクセル/アスペクト比: {prediction['aspect_ratio']:.2f})"""
-            
-            # クロッピング情報を追加
-            if cropping_info and cropping_info['has_cropping']:
-                crop_w, crop_h = cropping_info['crop_amount']
-                crop_ratio_w, crop_ratio_h = cropping_info['crop_ratio']
-                crop_direction = cropping_info['crop_direction']
-                
-                if crop_direction == "horizontal":
-                    crop_percent = crop_ratio_w * 100
-                    crop_text = f"**⚠️ 横方向に{crop_percent:.1f}%カット**（左右端{crop_w//2}px削除）"
-                else:
-                    crop_percent = crop_ratio_h * 100
-                    crop_text = f"**⚠️ 縦方向に{crop_percent:.1f}%カット**（上下端{crop_h//2}px削除）"
-                
-                info_text += f"\n{crop_text}"
-            else:
-                info_text += "\n✅ **クロッピングなし**（完全な画像を使用）"
+**予想サイズ**: **{pred_w}×{pred_h}** ({pred_h * pred_w:,}ピクセル/アスペクト比: {prediction['aspect_ratio']:.2f})"""
                 
         else:
             pred_h, pred_w = prediction['predicted_size']
             info_text = f"""🖼️ **予想出力サイズ**
 
-**予想サイズ**: **{pred_h}×{pred_w}** ({pred_h * pred_w:,}ピクセル/{prediction['aspect_description']})"""
+**予想サイズ**: **{pred_w}×{pred_h}** ({pred_h * pred_w:,}ピクセル/{prediction['aspect_description']})"""
         
         return gr.update(value=info_text)
         

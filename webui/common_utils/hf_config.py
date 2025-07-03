@@ -45,15 +45,15 @@ def get_model_cache_base_path() -> str:
         if new_path and os.path.exists(new_path):
             # 新しいパスを設定に追加
             add_shared_model_path(new_path)
-            print(f"[モデル設定] 新しい共有パスを設定: {new_path}")
+            print(translate("[モデル設定] 新しい共有パスを設定: {0}").format(new_path))
             return new_path
         else:
             # ローカルフォルダを選択した場合、今後プロンプトを表示しない
             hf_settings['prompt_for_path'] = False
             save_hf_settings(hf_settings)
     elif shared_paths:
-        print(f"[モデル設定] 設定済み共有パスが無効です: {shared_paths}")
-        print(f"[モデル設定] パスが存在しないため、ローカルパスにフォールバックします")
+        print(translate("[モデル設定] 設定済み共有パスが無効です: {0}").format(shared_paths))
+        print(translate("[モデル設定] パスが存在しないため、ローカルパスにフォールバックします"))
     
     # フォールバック: ローカルパス
     local_path = get_default_local_path(hf_settings.get('local_model_path', 'hf_download'))
@@ -181,13 +181,13 @@ def download_all_required_models() -> bool:
     Returns:
         bool: ダウンロード成功時True
     """
-    print("[モデル設定] 全モデルダウンロードを開始します...")
-    print("[モデル設定] 本家FramePack方式でダウンロード中...")
+    print(translate("[モデル設定] 全モデルダウンロードを開始します..."))
+    print(translate("[モデル設定] 本家FramePack方式でダウンロード中..."))
     
     # HF_HOME環境変数の確認（batファイルで設定済み）
     hf_home = os.environ.get('HF_HOME')
     if not hf_home:
-        print("[エラー] HF_HOME環境変数が設定されていません")
+        print(translate("[エラー] HF_HOME環境変数が設定されていません"))
         return False
     
     try:
@@ -214,16 +214,16 @@ def download_all_required_models() -> bool:
         ]
         
         def download_model(model_info):
-            print(f"[ダウンロード] {model_info['repo_id']} を開始...")
+            print(translate("[ダウンロード] {0} を開始...").format(model_info['repo_id']))
             kwargs = {
                 "repo_id": model_info["repo_id"],
                 "allow_patterns": model_info.get("allow_patterns", "*"),
                 "max_workers": max_workers_per_model,
             }
             snapshot_download(**kwargs)
-            print(f"[ダウンロード] {model_info['repo_id']} が完了しました")
+            print(translate("[ダウンロード] {0} が完了しました").format(model_info['repo_id']))
         
-        print(f"[モデル設定] モデルを順次ダウンロード開始... (tqdm競合回避のため1モデルずつ実行)")
+        print(translate("[モデル設定] モデルを順次ダウンロード開始... (tqdm競合回避のため1モデルずつ実行)"))
         
         with ThreadPoolExecutor(max_workers=max_parallel_models) as executor:
             futures = [executor.submit(download_model, model) for model in models_to_download]
@@ -232,14 +232,14 @@ def download_all_required_models() -> bool:
                 try:
                     future.result()
                 except Exception as e:
-                    print(f"[モデル設定] 個別モデルダウンロードエラー: {e}")
+                    print(translate("[モデル設定] 個別モデルダウンロードエラー: {0}").format(e))
                     return False
         
-        print("[モデル設定] 全モデルダウンロードが完了しました")
+        print(translate("[モデル設定] 全モデルダウンロードが完了しました"))
         return True
         
     except Exception as e:
-        print(f"[モデル設定] ダウンロードエラー: {e}")
+        print(translate("[モデル設定] ダウンロードエラー: {0}").format(e))
         import traceback
         traceback.print_exc()
         return False
@@ -257,7 +257,7 @@ def verify_model_cache_directory() -> bool:
     model_cache_base = get_model_cache_base_path()  # ログ出力は無効化済み
     if model_cache_base and not os.path.exists(model_cache_base):
         os.makedirs(model_cache_base, exist_ok=True)
-        print(f"モデルキャッシュディレクトリを作成: {model_cache_base}")
+        print(translate("モデルキャッシュディレクトリを作成: {0}").format(model_cache_base))
     
     return os.path.exists(model_cache_base) if model_cache_base else False
 
@@ -272,7 +272,7 @@ def setup_models_with_check() -> bool:
     Returns:
         bool: セットアップ完了時True
     """
-    print("[モデル設定] モデルセットアップを開始します...")
+    print(translate("[モデル設定] モデルセットアップを開始します..."))
     
     # 1. モデルキャッシュパス設定（設定ファイルベース・ユーザー選択可能）
     model_cache_base = get_model_cache_base_path()
@@ -282,13 +282,13 @@ def setup_models_with_check() -> bool:
     models_exist, missing_models = check_required_models()
     
     if models_exist:
-        print("[モデル設定] 必要なモデルは全て存在します。")
+        print(translate("[モデル設定] 必要なモデルは全て存在します。"))
         return True
     
     # 3. 不足モデルの報告
-    print(f"[モデル設定] 不足しているモデル: {len(missing_models)}個")
+    print(translate("[モデル設定] 不足しているモデル: {0}個").format(len(missing_models)))
     for model in missing_models:
-        print(f"  - {model}")
+        print(translate("  - {0}").format(model))
     
     # 4. ダウンロード実行
     print("\n" + "="*60)
@@ -315,14 +315,14 @@ def setup_models_with_check() -> bool:
             
             if choice in ['d', 'download', 'ダウンロード']:
                 # 直接ダウンロードを試行
-                print("[モデル設定] 直接ダウンロードを開始します...")
+                print(translate("[モデル設定] 直接ダウンロードを開始します..."))
                 download_success = download_all_required_models()
                 if download_success:
-                    print("[モデル設定] ダウンロードが成功しました。続行します。")
+                    print(translate("[モデル設定] ダウンロードが成功しました。続行します。"))
                     return True
                 else:
-                    print("[モデル設定] ダウンロードに失敗しました。")
-                    print("[モデル設定] アプリケーションを終了します。")
+                    print(translate("[モデル設定] ダウンロードに失敗しました。"))
+                    print(translate("[モデル設定] アプリケーションを終了します。"))
                     import sys
                     sys.exit(1)
                     
@@ -332,14 +332,14 @@ def setup_models_with_check() -> bool:
                 if new_path and os.path.exists(new_path):
                     # 新しいパスを設定に追加
                     add_shared_model_path(new_path)
-                    print(f"[モデル設定] 新しい共有パスを設定: {new_path}")
+                    print(translate("[モデル設定] 新しい共有パスを設定: {0}").format(new_path))
                     # 再チェック
                     models_exist_recheck, _ = check_required_models()
                     if models_exist_recheck:
-                        print("[モデル設定] モデルが見つかりました。続行します。")
+                        print(translate("[モデル設定] モデルが見つかりました。続行します。"))
                         return True
                     else:
-                        print("[モデル設定] 指定されたフォルダにもモデルが見つかりませんでした。")
+                        print(translate("[モデル設定] 指定されたフォルダにもモデルが見つかりませんでした。"))
                         return False
                 else:
                     return False

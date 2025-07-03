@@ -1,4 +1,4 @@
-# FramePack-oichi2 (Beta) | [Issues](https://github.com/git-ai-code/FramePack-oichi2/issues)
+# FramePack-oichi2 (Beta) | [English](README/README_en.md) | [繁體中文](README/README_zh.md) | [Русский](README/README_ru.md) | [Issues](https://github.com/git-ai-code/FramePack-oichi2/issues)
 
 **FramePack-oichi2**(通称：お壱弐の方)は、lllyasviel師の[lllyasviel/FramePack](https://github.com/lllyasviel/FramePack)のフォークであるnirvash氏の[nirvash/FramePack](https://github.com/nirvash/FramePack)を元にして作成され、Kohya Tech氏の[kohya-ss/FramePack-LoRAReady](https://github.com/kohya-ss/FramePack-LoRAReady)のコードを導入することでLoRA機能の正式実装と安定性が向上した[git-ai-code/FramePack-eichi](https://github.com/git-ai-code/FramePack-eichi)に、同氏提案の[1フレーム推論](https://github.com/kohya-ss/musubi-tuner/blob/main/docs/framepack_1f.md)と、後にfurusu氏により提案されたkisekaeichi機能を実装する形で、同リポジトリ内に別ツールとして作成された**FramePack-oichi**(通称：お壱の方)に対し、mattyamonaca氏により提案された1f-mc(1フレーム・マルチコントロール)方式を試験実装し、全体的にソースを見直し、いくつかの機能追加をした**動画生成1フレーム推論画像生成ツール**です。
 
@@ -23,7 +23,28 @@
 
 **問題を発見された場合は[Issues](https://github.com/git-ai-code/FramePack-oichi2/issues)にてご報告ください。**
 
+### 🚀 多言語起動オプション
+
+各言語に最適化された専用起動スクリプトをご利用いただけます：
+
+```batch
+run_oneframe_ichi2.bat       # 日本語版（デフォルト）
+run_oneframe_ichi2_en.bat    # English version
+run_oneframe_ichi2_zh-tw.bat # 繁體中文版
+run_oneframe_ichi2_ru.bat    # Русская версия
+Language_FramePack-oichi2.bat # 言語切替ツール
+```
+
 ## 🌟 主な新機能・改良点
+
+### 🔧 **最新更新（v0.1.0-pre）**
+
+#### UI/UX改善
+- **LoRAファイルアップロード強度設定**: アップロード版にも各ファイル用の強度入力欄を追加
+- **解像度予想表示の正確性向上**: 予想サイズの横縦表示順序を修正（幅×高さ形式に統一）
+
+#### 処理ロジック改善
+- **キュー機能使用時のシード管理最適化**: プロンプトキューとイメージキュー使用時はシード値を固定し、通常のバッチ処理時のみシード+1を適用。
 
 ※従来機能は[oichiユーザーガイド](https://github.com/git-ai-code/FramePack-eichi/blob/main/README/README_userguide.md#oichi%E7%89%88%E3%83%AF%E3%83%B3%E3%83%95%E3%83%AC%E3%83%BC%E3%83%A0%E7%89%88%E3%81%AE%E4%BD%BF%E3%81%84%E6%96%B9)をご参考下さい。
 
@@ -250,7 +271,15 @@ FramePack-oichi2/
 ├── .gitmodules                     # Git Submodule設定
 ├── LICENSE                         # ライセンス情報(MIT2.0)
 ├── README.md                       # プロジェクト説明書（本ファイル）
-├── run_oneframe_ichi2.bat          # メイン起動スクリプト
+├── run_oneframe_ichi2.bat          # メイン起動スクリプト（日本語版）
+├── run_oneframe_ichi2_en.bat       # 英語版起動スクリプト
+├── run_oneframe_ichi2_zh-tw.bat    # 繁體中文版起動スクリプト
+├── run_oneframe_ichi2_ru.bat       # ロシア語版起動スクリプト
+├── Language_FramePack-oichi2.bat   # 言語切替ツール
+├── README/                         # 📁 多言語ドキュメント
+│   ├── README_en.md               # 英語版README
+│   ├── README_zh.md               # 繁體中文版README
+│   └── README_ru.md               # ロシア語版README
 └── webui/                          # WebUIアプリケーション本体
 ```
 
@@ -298,9 +327,9 @@ webui/
 └── locales/                       # 🌍 多言語対応
     ├── i18n.py                    # 国際化機能コア
     ├── ja.json                    # 日本語翻訳
-    ├── en.json                    # 英語翻訳（現在未使用)
-    ├── ru.json                    # ロシア語翻訳（現在未使用)
-    └── zh-tw.json                 # 繁体字中国語翻訳（現在未使用)
+    ├── en.json                    # 英語翻訳
+    ├── ru.json                    # ロシア語翻訳
+    └── zh-tw.json                 # 繁体字中国語翻訳
 ```
 
 ### **🔥 重要：diffusers_helper について**

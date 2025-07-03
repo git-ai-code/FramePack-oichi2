@@ -825,9 +825,15 @@ def process(input_image, prompt, n_prompt, seed, steps, cfg, gs, rs, gpu_memory_
             current_latent_window_size = new_rope_value
             print(translate("フレーム処理範囲: {0}").format(current_latent_window_size))
         else:
-            current_seed = original_seed + batch_index
-            if batch_count > 1:
-                print(translate("初期シード値: {0}").format(current_seed))
+            # キュー機能使用時はシード+1を無効化（通常のバッチ処理時のみ+1）
+            if queue_enabled:
+                current_seed = original_seed
+                if batch_count > 1:
+                    print(translate("キュー機能使用中: 初期シード値固定 {0}").format(current_seed))
+            else:
+                current_seed = original_seed + batch_index
+                if batch_count > 1:
+                    print(translate("初期シード値: {0}").format(current_seed))
         
         if batch_stopped:
             break
@@ -1193,7 +1199,7 @@ with block:
                         )
                 
                 # 高度な画像制御設定
-                gr.Markdown('<span style="font-size: 1.2em; font-weight: bold;">kisekaeichi + 1f-mc設定</span>')
+                gr.Markdown(f'<span style="font-size: 1.2em; font-weight: bold;">{translate("kisekaeichi + 1f-mc設定")}</span>')
                 
                 use_advanced_control = gr.Checkbox(
                     label=translate("高度な画像制御を使用"),
@@ -1204,10 +1210,10 @@ with block:
                 # 制御モード選択
                 advanced_control_mode = gr.Radio(
                     choices=[
-                        ("1フレーム推論（基本生成）", "one_frame"),
-                        ("kisekaeichi（着せ替え・服装変更）", "kisekaeichi"),
-                        ("1f-mc（フレーム補間・動的変化）", "1fmc"),
-                        ("カスタム（全制御画像使用）", "custom")
+                        (translate("1フレーム推論（基本生成）"), "one_frame"),
+                        (translate("kisekaeichi（着せ替え・服装変更）"), "kisekaeichi"),
+                        (translate("1f-mc（フレーム補間・動的変化）"), "1fmc"),
+                        (translate("カスタム（全制御画像使用）"), "custom")
                     ],
                     value="one_frame",
                     label=translate("制御モード"),
